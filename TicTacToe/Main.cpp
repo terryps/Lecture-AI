@@ -22,68 +22,24 @@ int maxValue(int depth, int a, int b);
 int minValue(int depth, int a, int b);
 int utility(int turn);
 
-int utility(int turn)
-{
-	int visit[19][19] = { 0, };
-	int sum = 0;
-	for (int i = 0; i < 19; i++) {
-		for (int j = 0; j < 19; j++) {
-
-			if (board[i][j] != 0 && visit[i][j]==0) {
-				for (int m = 0; m < 3; m++) {
-					int cnt = 1;
-					for (int n = 1; n < 4; n++) {
-						if ((i + dir[m][0] * n) < 19 && (j + dir[m][1] * n) < 19 && board[i][j] == board[i + dir[m][0] * n][j + dir[m][1] * n]) {
-							cnt++;
-							visit[i + dir[m][0] * n][j + dir[m][1] * n] = 1;
-						}
-						else { break; }
-					}
-
-					if (cnt == 1) {
-						if (turn == PLAYER2 && board[i][j]==PLAYER2) sum += 10;
-						else sum += 1;
-					}
-					else if (cnt == 2) {
-						if (turn == PLAYER2 && board[i][j]==PLAYER2) sum += 20;
-						else if (turn == PLAYER1 && board[i][j] == PLAYER2) sum += 10;
-						else if (turn == PLAYER2 && board[i][j] == PLAYER1) sum += 5;
-						else sum += 1;
-					}
-					else if (cnt == 3) {
-						if (turn == PLAYER2 && board[i][j] == PLAYER2) sum += 1000;
-						else if (turn == PLAYER1 && board[i][j] == PLAYER2) sum += 500;
-						else sum += 1;
-					}
-					else if (cnt == 4) {
-						if (turn == PLAYER1 && board[i][j] == PLAYER1) sum += 1;
-						else if (turn == PLAYER2 && board[i][j] == PLAYER2) sum += 100000;
-						else if (turn == PLAYER1 && board[i][j] == PLAYER2) sum += 50000;
-						else sum += 30000;
-
-					}
-				}
-				visit[i][j] = 1;
-			}
-		}
-	}
-
-	return sum;
-}
-
 int main()
 {
+	printBoard();
+
 	while (!checkFinish()) {
+
 		cout << "Your Turn" << endl;
 		cout << "Press the coordinate ex)x y: " << endl;
 		int x, y;
 		cin >> x >> y;
 		board[x][y] = PLAYER1;
 		printBoard();
+		cout << endl;
 
 		cout << "Computer's Turn" << endl;
 		alphaBetaSearch();
 		printBoard();
+		cout << endl;
 	}
 
 }
@@ -91,13 +47,14 @@ int main()
 void printBoard()
 {
 	for (int i = 0; i < BRDSIZE; i++) {
+		printf("%2d	 ", i);
 		for (int j = 0; j < BRDSIZE; j++) {
 			if (board[i][j] == PLAYER1)
-				printf("[%c]", 'O');
+				printf("[%s]", "●");
 			else if (board[i][j] == PLAYER2)
-				printf("[%c]", 'X');
+				printf("[%s]", "○");
 			else
-				printf("[ ]");
+				printf("[  ]");
 		}
 		printf("\n");
 	}
@@ -206,4 +163,53 @@ int minValue(int depth, int a, int b)
 	}
 
 	return v;
+}
+
+int utility(int turn)
+{
+	int visit[19][19] = { 0, };
+	int sum = 0;
+	for (int i = 0; i < 19; i++) {
+		for (int j = 0; j < 19; j++) {
+
+			if (board[i][j] != 0 && visit[i][j] == 0) {
+				for (int m = 0; m < 3; m++) {
+					int cnt = 1;
+					for (int n = 1; n < 4; n++) {
+						if ((i + dir[m][0] * n) < 19 && (j + dir[m][1] * n) < 19 && board[i][j] == board[i + dir[m][0] * n][j + dir[m][1] * n]) {
+							cnt++;
+							visit[i + dir[m][0] * n][j + dir[m][1] * n] = 1;
+						}
+						else { break; }
+					}
+
+					if (cnt == 1) {
+						if (turn == PLAYER2 && board[i][j] == PLAYER2) sum += 10;
+						else sum += 1;
+					}
+					else if (cnt == 2) {
+						if (turn == PLAYER2 && board[i][j] == PLAYER2) sum += 20;
+						else if (turn == PLAYER1 && board[i][j] == PLAYER2) sum += 10;
+						else if (turn == PLAYER2 && board[i][j] == PLAYER1) sum += 5;
+						else sum += 1;
+					}
+					else if (cnt == 3) {
+						if (turn == PLAYER2 && board[i][j] == PLAYER2) sum += 1000;
+						else if (turn == PLAYER1 && board[i][j] == PLAYER2) sum += 500;
+						else sum += 1;
+					}
+					else if (cnt == 4) {
+						if (turn == PLAYER1 && board[i][j] == PLAYER1) sum += 1;
+						else if (turn == PLAYER2 && board[i][j] == PLAYER2) sum += 100000;
+						else if (turn == PLAYER1 && board[i][j] == PLAYER2) sum += 50000;
+						else sum += 30000;
+
+					}
+				}
+				visit[i][j] = 1;
+			}
+		}
+	}
+
+	return sum;
 }
